@@ -22,7 +22,7 @@ config.window_close_confirmation = "NeverPrompt"
 -- 2. FantasqueSansM Nerd Font Mono
 --
 -- ]]
-config.font = wezterm.font("Maple Mono")
+config.font = wezterm.font("Maple Mono NF CN")
 config.font_size = 14.0
 
 -- tabs
