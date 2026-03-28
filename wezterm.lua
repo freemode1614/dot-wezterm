@@ -36,7 +36,7 @@ config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = true
 
 -- 光标设置
-config.default_cursor_style = "BlinkingBar"
+config.default_cursor_style = "BlinkingBlock"
 config.cursor_blink_rate = 800
 
 -- 滚动设置
