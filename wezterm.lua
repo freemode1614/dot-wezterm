@@ -3,7 +3,6 @@ local action = wezterm.action
 
 -- 加载模块
 local appearance = require("lua/appearance")
-local dev_utils = require("lua/dev-utils")
 
 -- 配置构建器
 local config = wezterm.config_builder and wezterm.config_builder() or {}
@@ -32,11 +31,9 @@ config.window_padding = {
     bottom = 8,
 }
 
--- Tab 设置
-config.hide_tab_bar_if_only_one_tab = false
+-- Tab 设置（简化，因为 Zellij 接管了 Tab）
+config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = true
-config.tab_bar_at_bottom = false
-config.tab_max_width = 32
 
 -- 光标设置
 config.default_cursor_style = "BlinkingBar"
@@ -69,71 +66,24 @@ config.window_frame = {
 }
 
 -- ============================================
--- 快捷键配置（开发专用）
+-- 快捷键配置（Zellij 为主，WezTerm 做窗口管理）
 -- ============================================
 
-config.leader = { key = "a", mods = "CTRL", timeout_milliseconds = 1000 }
+-- Leader key 改为 Ctrl+b（与 Zellij 的 tmux 模式一致，方便记忆）
+config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1000 }
 
 config.keys = {
-    -- ========== 基础操作 ==========
+    -- ========== 窗口管理（WezTerm 职责）==========
+    -- 新建窗口
+    { key = "n", mods = "CMD", action = action.SpawnWindow },
+    
+    -- 关闭窗口
+    { key = "w", mods = "CMD", action = action.CloseCurrentTab({ confirm = true }) },
+    
     -- 快速清屏（保留历史）
     { key = "k", mods = "CMD", action = action.ClearScrollback("ScrollbackAndViewport") },
     
-    -- 复制模式（类似 vim）
-    { key = "[", mods = "LEADER", action = action.ActivateCopyMode },
-    
-    -- 快速搜索
-    { key = "/", mods = "LEADER", action = action.Search({ CaseInSensitiveString = "" }) },
-    
-    -- ========== Pane 管理 ==========
-    -- 垂直分屏
-    { key = "v", mods = "LEADER", action = action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
-    -- 水平分屏
-    { key = "s", mods = "LEADER", action = action.SplitVertical({ domain = "CurrentPaneDomain" }) },
-    -- 关闭 pane
-    { key = "x", mods = "LEADER", action = action.CloseCurrentPane({ confirm = true }) },
-    -- 最大化/恢复 pane
-    { key = "z", mods = "LEADER", action = action.TogglePaneZoomState },
-    
-    -- Pane 导航（使用 vim 风格）
-    { key = "h", mods = "LEADER", action = action.ActivatePaneDirection("Left") },
-    { key = "j", mods = "LEADER", action = action.ActivatePaneDirection("Down") },
-    { key = "k", mods = "LEADER", action = action.ActivatePaneDirection("Up") },
-    { key = "l", mods = "LEADER", action = action.ActivatePaneDirection("Right") },
-    
-    -- Pane 调整大小
-    { key = "H", mods = "LEADER|SHIFT", action = action.AdjustPaneSize({ "Left", 5 }) },
-    { key = "J", mods = "LEADER|SHIFT", action = action.AdjustPaneSize({ "Down", 5 }) },
-    { key = "K", mods = "LEADER|SHIFT", action = action.AdjustPaneSize({ "Up", 5 }) },
-    { key = "L", mods = "LEADER|SHIFT", action = action.AdjustPaneSize({ "Right", 5 }) },
-    
-    -- 旋转 panes
-    { key = "r", mods = "LEADER", action = action.RotatePanes("Clockwise") },
-    
-    -- ========== Tab 管理 ==========
-    -- 新建 Tab
-    { key = "c", mods = "LEADER", action = action.SpawnTab("CurrentPaneDomain") },
-    -- 关闭 Tab
-    { key = "w", mods = "LEADER", action = action.CloseCurrentTab({ confirm = true }) },
-    -- 切换 Tab
-    { key = "1", mods = "LEADER", action = action.ActivateTab(0) },
-    { key = "2", mods = "LEADER", action = action.ActivateTab(1) },
-    { key = "3", mods = "LEADER", action = action.ActivateTab(2) },
-    { key = "4", mods = "LEADER", action = action.ActivateTab(3) },
-    { key = "5", mods = "LEADER", action = action.ActivateTab(4) },
-    { key = "6", mods = "LEADER", action = action.ActivateTab(5) },
-    { key = "7", mods = "LEADER", action = action.ActivateTab(6) },
-    { key = "8", mods = "LEADER", action = action.ActivateTab(7) },
-    { key = "9", mods = "LEADER", action = action.ActivateTab(8) },
-    { key = "0", mods = "LEADER", action = action.ActivateTab(-1) },
-    -- 上一个/下一个 Tab
-    { key = "n", mods = "LEADER", action = action.ActivateTabRelative(1) },
-    { key = "p", mods = "LEADER", action = action.ActivateTabRelative(-1) },
-    -- 移动 Tab
-    { key = ">", mods = "LEADER|SHIFT", action = action.MoveTabRelative(1) },
-    { key = "<", mods = "LEADER|SHIFT", action = action.MoveTabRelative(-1) },
-    
-    -- ========== 工作区/项目切换 ==========
+    -- ========== 工作区管理（WezTerm 职责）==========
     -- 快速选择工作区
     { key = "f", mods = "LEADER", action = action.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
     -- 新建工作区
@@ -149,42 +99,26 @@ config.keys = {
             end
         end),
     }) },
+    -- 切换到上一个工作区
+    { key = "[", mods = "LEADER", action = action.SwitchWorkspaceRelative(-1) },
+    -- 切换到下一个工作区
+    { key = "]", mods = "LEADER", action = action.SwitchWorkspaceRelative(1) },
     
-    -- ========== 开发工具快捷启动 ==========
-    -- 快速打开 lazygit
-    { key = "g", mods = "LEADER", action = action.SpawnCommandInNewTab({
-        args = { "lazygit" },
-        cwd = dev_utils.get_current_cwd(),
-    }) },
-    -- 快速打开 btop
-    { key = "t", mods = "LEADER", action = action.SpawnCommandInNewTab({
-        args = { "btop" },
-    }) },
-    -- 快速打开 nvim（在当前目录）
-    { key = "e", mods = "LEADER", action = action.SpawnCommandInNewTab({
-        args = { "nvim", "." },
-        cwd = dev_utils.get_current_cwd(),
-    }) },
+    -- ========== 字体调整（WezTerm 职责）==========
+    -- 增大字体
+    { key = "=", mods = "CMD", action = action.IncreaseFontSize },
+    -- 减小字体
+    { key = "-", mods = "CMD", action = action.DecreaseFontSize },
+    -- 重置字体
+    { key = "0", mods = "CMD", action = action.ResetFontSize },
     
-    -- ========== 布局预设 ==========
-    -- 开发三栏布局（编辑器 | 终端 | 辅助）
-    { key = "d", mods = "LEADER", action = wezterm.action_callback(function(window, pane)
-        dev_utils.apply_dev_layout(window, pane)
-    end) },
-    -- 双栏布局（左右）
-    { key = "b", mods = "LEADER", action = wezterm.action_callback(function(window, pane)
-        dev_utils.apply_split_layout(window, pane)
-    end) },
-    
-    -- ========== 快速编辑配置 ==========
-    -- 快速编辑 wezterm 配置
-    { key = ",", mods = "LEADER", action = action.SpawnCommandInNewTab({
-        args = { "nvim", wezterm.config_file },
-    }) },
-    -- 重载配置
-    { key = "R", mods = "LEADER|SHIFT", action = action.ReloadConfiguration },
-    
-    -- ========== 其他实用功能 ==========
+    -- ========== 复制/粘贴（WezTerm 职责）==========
+    -- 复制模式（类似 vim）
+    { key = "[", mods = "LEADER", action = action.ActivateCopyMode },
+    -- 快速搜索
+    { key = "/", mods = "LEADER", action = action.Search({ CaseInSensitiveString = "" }) },
+    -- 快速选择并复制
+    { key = "y", mods = "LEADER", action = action.QuickSelect },
     -- 快速选择 URL 打开
     { key = "u", mods = "LEADER", action = action.QuickSelectArgs({
         label = "打开 URL",
@@ -194,8 +128,34 @@ config.keys = {
             wezterm.open_with(url)
         end),
     }) },
-    -- 快速选择并复制
-    { key = "y", mods = "LEADER", action = action.QuickSelect },
+    
+    -- ========== 开发工具快捷启动（WezTerm 职责）==========
+    -- 快速打开 lazygit（在新窗口，方便独立操作）
+    { key = "g", mods = "LEADER", action = action.SpawnCommandInNewWindow({
+        args = { "zellij", "attach", "lazygit", "--create", "--", "lazygit" },
+    }) },
+    -- 快速打开 btop（系统监控）
+    { key = "t", mods = "LEADER", action = action.SpawnCommandInNewWindow({
+        args = { "zellij", "attach", "btop", "--create", "--", "btop" },
+    }) },
+    -- 快速打开笔记/待办（可选，示例）
+    { key = "n", mods = "LEADER", action = action.SpawnCommandInNewWindow({
+        args = { "zellij", "attach", "notes", "--create", "--", "nvim", "~/notes.md" },
+    }) },
+    
+    -- ========== Zellij 相关（WezTerm 辅助）==========
+    -- 快速启动 Zellij（如果当前没有运行）
+    { key = "z", mods = "LEADER", action = action.SendString("zellij attach main --create\n") },
+    -- 启动 Zellij 并直接创建开发会话
+    { key = "Z", mods = "LEADER|SHIFT", action = action.SendString("zellij attach dev --create\n") },
+    
+    -- ========== 配置管理（WezTerm 职责）==========
+    -- 快速编辑 wezterm 配置
+    { key = ",", mods = "LEADER", action = action.SpawnCommandInNewTab({
+        args = { "nvim", wezterm.config_file },
+    }) },
+    -- 重载配置
+    { key = "r", mods = "LEADER", action = action.ReloadConfiguration },
 }
 
 -- ============================================
@@ -218,36 +178,24 @@ config.mouse_bindings = {
 }
 
 -- ============================================
--- 智能状态栏
+-- 智能状态栏（简化版）
 -- ============================================
 
 wezterm.on("update-status", function(window, pane)
     local cells = {}
     
-    -- 获取当前工作目录
-    local cwd = pane:get_current_working_dir()
-    if cwd then
-        local cwd_str = tostring(cwd):gsub("file://", "")
-        -- 只显示最后两级目录
-        local short_cwd = cwd_str:match("([^/]+/[^/]+)$") or cwd_str:match("([^/]+)$") or cwd_str
-        table.insert(cells, "📁 " .. short_cwd)
-    end
-    
-    -- 获取 Git 分支（使用 dev_utils 模块）
-    local git_branch = dev_utils.get_git_branch(pane)
-    if git_branch then
-        table.insert(cells, "  " .. git_branch)
+    -- 当前工作区名称
+    local workspace = window:active_workspace()
+    if workspace and workspace ~= "default" then
+        table.insert(cells, " workspace: " .. workspace .. " ")
     end
     
     -- 当前时间
     local time = wezterm.strftime("%H:%M")
-    table.insert(cells, " 🕐 " .. time)
-    
-    -- 用户名和主机名
-    table.insert(cells, " 💻 " .. wezterm.hostname())
+    table.insert(cells, " " .. time .. " ")
     
     -- 组合状态栏
-    local text = table.concat(cells, " │ ")
+    local text = table.concat(cells, "│")
     
     -- 使用 Powerline 风格
     local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
@@ -259,56 +207,20 @@ wezterm.on("update-status", function(window, pane)
         { Text = SOLID_LEFT_ARROW },
         { Background = { Color = color_scheme.background } },
         { Foreground = { Color = color_scheme.foreground } },
-        { Text = " " .. text .. "  " },
+        { Text = text },
     }))
 end)
 
 -- ============================================
--- Tab 标题格式化
+-- Tab 标题格式化（简化）
 -- ============================================
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
     local title = tab.active_pane.title
-    local cwd = tab.active_pane.current_working_dir
     
-    -- 如果是 home 目录，显示 ~
-    if cwd then
-        local cwd_str = tostring(cwd):gsub("file://", "")
-        cwd_str = cwd_str:gsub(os.getenv("HOME") or "/Users/" .. os.getenv("USER"), "~")
-        
-        -- 根据进程名设置图标
-        local icon = ""
-        if title:find("nvim") or title:find("vim") then
-            icon = " "
-        elseif title:find("lazygit") then
-            icon = ""
-        elseif title:find("node") or title:find("npm") or title:find("pnpm") then
-            icon = " "
-        elseif title:find("python") or title:find("pip") or title:find("uv") then
-            icon = " "
-        elseif title:find("btop") or title:find("htop") or title:find("top") then
-            icon = ""
-        elseif title:find("ssh") then
-            icon = "󰣀 "
-        else
-            icon = ""
-        end
-        
-        -- 显示：图标 + 进程名 | 目录
-        local display = icon .. title
-        if #cwd_str > 15 then
-            cwd_str = "..." .. cwd_str:sub(-12)
-        end
-        display = display .. "  " .. cwd_str
-        
-        -- 截断以适应宽度
-        if #display > max_width - 4 then
-            display = display:sub(1, max_width - 7) .. "..."
-        end
-        
-        return {
-            { Text = " " .. display .. " " },
-        }
+    -- 截断以适应宽度
+    if #title > max_width - 4 then
+        title = title:sub(1, max_width - 7) .. "..."
     end
     
     return {
@@ -317,32 +229,32 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 end)
 
 -- ============================================
--- 窗口标题格式化
+-- 窗口标题
 -- ============================================
 
 wezterm.on("format-window-title", function(tab, pane, tabs, panes, config)
-    local zoomed = ""
-    if tab.active_pane.is_zoomed then
-        zoomed = "[Z] "
+    local workspace = pane:window():active_workspace()
+    local title = tab.active_pane.title
+    
+    if workspace and workspace ~= "default" then
+        return "[" .. workspace .. "] " .. title
     end
     
-    local index = ""
-    if #tabs > 1 then
-        index = string.format("[%d/%d] ", tab.tab_index + 1, #tabs)
-    end
-    
-    return zoomed .. index .. tab.active_pane.title
+    return title
 end)
 
 -- ============================================
--- 启动时恢复工作区（可选）
+-- 默认启动命令（自动启动 Zellij）
 -- ============================================
 
--- 自动恢复上次的 tabs（需要启用 session saving）
-config.switch_to_last_active_tab_when_closing_tab = true
+-- 如果希望在打开 WezTerm 时自动启动 Zellij，取消下面这行的注释
+-- config.default_prog = { "zellij", "attach", "main", "--create" }
 
--- 退出前确认
-config.window_close_confirmation = "AlwaysPrompt"
+-- 或者使用更智能的方式：如果已经在 Zellij 中，就不再启动
+config.set_environment_variables = {
+    -- 告诉 shell 当前在 WezTerm 中
+    WEZTERM = "1",
+}
 
 -- ============================================
 -- 返回配置
