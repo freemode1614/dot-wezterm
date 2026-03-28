@@ -35,9 +35,8 @@ config.window_padding = {
 config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = true
 
--- 光标设置
-config.default_cursor_style = "BlinkingBlock"
-config.cursor_blink_rate = 800
+-- 光标设置 - 使用 Block 样式（方块）
+config.default_cursor_style = "SteadyBlock"
 
 -- 滚动设置
 config.scrollback_lines = 100000
