@@ -74,43 +74,47 @@ config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1000 }
 config.keys = {
     -- ========== 窗口管理（WezTerm 职责）==========
     -- 新建窗口
-    { key = "n", mods = "CMD", action = action.SpawnWindow },
-    
+    { key = "n", mods = "CMD",    action = action.SpawnWindow },
+
     -- 关闭窗口
-    { key = "w", mods = "CMD", action = action.CloseCurrentTab({ confirm = true }) },
-    
+    { key = "w", mods = "CMD",    action = action.CloseCurrentTab({ confirm = true }) },
+
     -- 快速清屏（保留历史）
-    { key = "k", mods = "CMD", action = action.ClearScrollback("ScrollbackAndViewport") },
-    
+    { key = "k", mods = "CMD",    action = action.ClearScrollback("ScrollbackAndViewport") },
+
     -- ========== 工作区管理（WezTerm 职责）==========
     -- 快速选择工作区
     { key = "f", mods = "LEADER", action = action.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
     -- 新建工作区
-    { key = "F", mods = "LEADER|SHIFT", action = action.PromptInputLine({
-        description = wezterm.format({
-            { Attribute = { Intensity = "Bold" } },
-            { Foreground = { AnsiColor = "Fuchsia" } },
-            { Text = "新建工作区名称:" },
-        }),
-        action = wezterm.action_callback(function(window, pane, line)
-            if line then
-                window:perform_action(action.SwitchToWorkspace({ name = line }), pane)
-            end
-        end),
-    }) },
+    {
+        key = "F",
+        mods = "LEADER|SHIFT",
+        action = action.PromptInputLine({
+            description = wezterm.format({
+                { Attribute = { Intensity = "Bold" } },
+                { Foreground = { AnsiColor = "Fuchsia" } },
+                { Text = "新建工作区名称:" },
+            }),
+            action = wezterm.action_callback(function(window, pane, line)
+                if line then
+                    window:perform_action(action.SwitchToWorkspace({ name = line }), pane)
+                end
+            end),
+        })
+    },
     -- 切换到上一个工作区
     { key = "[", mods = "LEADER", action = action.SwitchWorkspaceRelative(-1) },
     -- 切换到下一个工作区
     { key = "]", mods = "LEADER", action = action.SwitchWorkspaceRelative(1) },
-    
+
     -- ========== 字体调整（WezTerm 职责）==========
     -- 增大字体
-    { key = "=", mods = "CMD", action = action.IncreaseFontSize },
+    { key = "=", mods = "CMD",    action = action.IncreaseFontSize },
     -- 减小字体
-    { key = "-", mods = "CMD", action = action.DecreaseFontSize },
+    { key = "-", mods = "CMD",    action = action.DecreaseFontSize },
     -- 重置字体
-    { key = "0", mods = "CMD", action = action.ResetFontSize },
-    
+    { key = "0", mods = "CMD",    action = action.ResetFontSize },
+
     -- ========== 复制/粘贴（WezTerm 职责）==========
     -- 复制模式（类似 vim）
     { key = "[", mods = "LEADER", action = action.ActivateCopyMode },
@@ -119,40 +123,60 @@ config.keys = {
     -- 快速选择并复制
     { key = "y", mods = "LEADER", action = action.QuickSelect },
     -- 快速选择 URL 打开
-    { key = "u", mods = "LEADER", action = action.QuickSelectArgs({
-        label = "打开 URL",
-        patterns = { "https?://\\S+" },
-        action = wezterm.action_callback(function(window, pane)
-            local url = window:get_selection_text_for_pane(pane)
-            wezterm.open_with(url)
-        end),
-    }) },
-    
+    {
+        key = "u",
+        mods = "LEADER",
+        action = action.QuickSelectArgs({
+            label = "打开 URL",
+            patterns = { "https?://\\S+" },
+            action = wezterm.action_callback(function(window, pane)
+                local url = window:get_selection_text_for_pane(pane)
+                wezterm.open_with(url)
+            end),
+        })
+    },
+
     -- ========== 开发工具快捷启动（WezTerm 职责）==========
     -- 快速打开 lazygit（在新窗口，方便独立操作）
-    { key = "g", mods = "LEADER", action = action.SpawnCommandInNewWindow({
-        args = { "zellij", "attach", "lazygit", "--create", "--", "lazygit" },
-    }) },
+    {
+        key = "g",
+        mods = "LEADER",
+        action = action.SpawnCommandInNewWindow({
+            args = { "zellij", "attach", "lazygit", "--create", "--", "lazygit" },
+        })
+    },
     -- 快速打开 btop（系统监控）
-    { key = "t", mods = "LEADER", action = action.SpawnCommandInNewWindow({
-        args = { "zellij", "attach", "btop", "--create", "--", "btop" },
-    }) },
+    {
+        key = "t",
+        mods = "LEADER",
+        action = action.SpawnCommandInNewWindow({
+            args = { "zellij", "attach", "btop", "--create", "--", "btop" },
+        })
+    },
     -- 快速打开笔记/待办（可选，示例）
-    { key = "n", mods = "LEADER", action = action.SpawnCommandInNewWindow({
-        args = { "zellij", "attach", "notes", "--create", "--", "nvim", "~/notes.md" },
-    }) },
-    
+    {
+        key = "n",
+        mods = "LEADER",
+        action = action.SpawnCommandInNewWindow({
+            args = { "zellij", "attach", "notes", "--create", "--", "nvim", "~/notes.md" },
+        })
+    },
+
     -- ========== Zellij 相关（WezTerm 辅助）==========
     -- 快速启动 Zellij（如果当前没有运行）
-    { key = "z", mods = "LEADER", action = action.SendString("zellij attach main --create\n") },
+    { key = "z", mods = "LEADER",       action = action.SendString("zellij attach main --create\n") },
     -- 启动 Zellij 并直接创建开发会话
     { key = "Z", mods = "LEADER|SHIFT", action = action.SendString("zellij attach dev --create\n") },
-    
+
     -- ========== 配置管理（WezTerm 职责）==========
     -- 快速编辑 wezterm 配置
-    { key = ",", mods = "LEADER", action = action.SpawnCommandInNewTab({
-        args = { "nvim", wezterm.config_file },
-    }) },
+    {
+        key = ",",
+        mods = "LEADER",
+        action = action.SpawnCommandInNewTab({
+            args = { "nvim", wezterm.config_file },
+        })
+    },
     -- 重载配置
     { key = "r", mods = "LEADER", action = action.ReloadConfiguration },
 }
@@ -182,24 +206,24 @@ config.mouse_bindings = {
 
 wezterm.on("update-status", function(window, pane)
     local cells = {}
-    
+
     -- 当前工作区名称
     local workspace = window:active_workspace()
     if workspace and workspace ~= "default" then
         table.insert(cells, " workspace: " .. workspace .. " ")
     end
-    
+
     -- 当前时间
     local time = wezterm.strftime("%H:%M")
     table.insert(cells, " " .. time .. " ")
-    
+
     -- 组合状态栏
     local text = table.concat(cells, "│")
-    
+
     -- 使用 Powerline 风格
     local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
     local color_scheme = window:effective_config().resolved_palette
-    
+
     window:set_right_status(wezterm.format({
         { Background = { Color = "none" } },
         { Foreground = { Color = color_scheme.background } },
@@ -216,12 +240,12 @@ end)
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
     local title = tab.active_pane.title
-    
+
     -- 截断以适应宽度
     if #title > max_width - 4 then
         title = title:sub(1, max_width - 7) .. "..."
     end
-    
+
     return {
         { Text = " " .. title .. " " },
     }
@@ -234,11 +258,11 @@ end)
 wezterm.on("format-window-title", function(tab, pane, tabs, panes, config)
     local workspace = pane:window():active_workspace()
     local title = tab.active_pane.title
-    
+
     if workspace and workspace ~= "default" then
         return "[" .. workspace .. "] " .. title
     end
-    
+
     return title
 end)
 
