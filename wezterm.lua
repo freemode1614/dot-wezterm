@@ -32,11 +32,11 @@ config.window_padding = {
 }
 
 -- Tab 设置（简化，因为 Zellij 接管了 Tab）
-config.hide_tab_bar_if_only_one_tab = true
+config.hide_tab_bar_if_only_one_tab = false
 config.use_fancy_tab_bar = true
 
 -- 光标设置 - 使用 Block 样式（方块）
-config.default_cursor_style = "SteadyBlock"
+config.default_cursor_style = "BlinkingBlock"
 
 -- 滚动设置
 config.scrollback_lines = 100000
@@ -56,13 +56,22 @@ else
     config.colors = require("lua/cyberdream-light")
 end
 
--- 窗口边框颜色
-config.window_frame = {
-    font = wezterm.font({ family = "Maple Mono NF CN", weight = "Bold" }),
-    font_size = 12.0,
-    active_titlebar_bg = "#16181a",
-    inactive_titlebar_bg = "#1a1d1f",
-}
+-- 窗口边框颜色（根据系统主题自动调整）
+if appearance.is_dark() then
+    config.window_frame = {
+        font = wezterm.font({ family = "Maple Mono NF CN", weight = "Bold" }),
+        font_size = 12.0,
+        active_titlebar_bg = "#16181a",
+        inactive_titlebar_bg = "#1a1d1f",
+    }
+else
+    config.window_frame = {
+        font = wezterm.font({ family = "Maple Mono NF CN", weight = "Bold" }),
+        font_size = 12.0,
+        active_titlebar_bg = "#d8d4cf",
+        inactive_titlebar_bg = "#c8c4bf",
+    }
+end
 
 -- ============================================
 -- 快捷键配置（Zellij 为主，WezTerm 做窗口管理）

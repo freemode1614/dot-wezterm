@@ -5,21 +5,21 @@ return {
     -- 前景色（主要文字）- 深色确保清晰
     foreground = "#1a1a1a",
 
-    -- 背景色 - 稍微偏灰的白色，减少刺眼感，同时保持明亮
-    background = "#f8f9fa",
+    -- 背景色 - 柔和的米灰白色，减少刺眼感
+    background = "#e8e4df",
 
     -- 光标颜色
     cursor_bg = "#1a1a1a",
-    cursor_fg = "#f8f9fa",
+    cursor_fg = "#e8e4df",
     cursor_border = "#1a1a1a",
 
     -- 选中文本颜色
     selection_fg = "#1a1a1a",
-    selection_bg = "#d0d7de",
+    selection_bg = "#c8c4bf",
 
     -- 滚动条和分割线
-    scrollbar_thumb = "#c1c7cd",
-    split = "#d1d9e0",
+    scrollbar_thumb = "#b8b4af",
+    split = "#c8c4bf",
 
     -- ANSI 颜色（16色）
     -- 修正：黑色应该是深色，不是白色！
@@ -56,4 +56,43 @@ return {
     -- bold = {
     --     foreground = "#000000",
     -- },
+
+    -- Tab bar 颜色配置（浅色主题）
+    tab_bar = {
+        -- 背景色
+        background = "#d8d4cf",
+        
+        -- 激活的 tab
+        active_tab = {
+            bg_color = "#e8e4df",
+            fg_color = "#1a1a1a",
+            intensity = "Normal",
+        },
+        
+        -- 非激活的 tab
+        inactive_tab = {
+            bg_color = "#d8d4cf",
+            fg_color = "#616161",
+            intensity = "Normal",
+        },
+        
+        -- 非激活 tab 悬停
+        inactive_tab_hover = {
+            bg_color = "#c8c4bf",
+            fg_color = "#1a1a1a",
+            intensity = "Normal",
+        },
+        
+        -- 新建 tab 按钮
+        new_tab = {
+            bg_color = "#d8d4cf",
+            fg_color = "#616161",
+        },
+        
+        -- 新建 tab 按钮悬停
+        new_tab_hover = {
+            bg_color = "#c8c4bf",
+            fg_color = "#1a1a1a",
+        },
+    },
 }
