@@ -18,7 +18,7 @@ config.line_height = 1.2
 
 -- 窗口设置
 config.window_close_confirmation = "NeverPrompt"
-config.window_background_opacity = 0.95
+config.window_background_opacity = 0.8
 config.macos_window_background_blur = 20
 config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 config.enable_scroll_bar = true
