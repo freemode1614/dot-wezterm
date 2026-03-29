@@ -49,11 +49,12 @@ config.animation_fps = 60
 -- 主题设置
 -- ============================================
 
--- 根据系统主题自动切换
+-- 根据系统主题自动切换（与 nvim 主题保持一致）
+-- dark -> nightfox, light -> dawnfox
 if appearance.is_dark() then
-    config.colors = require("lua/cyberdream")
+    config.colors = require("lua/nightfox")
 else
-    config.colors = require("lua/cyberdream-light")
+    config.colors = require("lua/dawnfox")
 end
 
 -- 窗口边框颜色（根据系统主题自动调整）
@@ -61,15 +62,15 @@ if appearance.is_dark() then
     config.window_frame = {
         font = wezterm.font({ family = "Maple Mono NF CN", weight = "Bold" }),
         font_size = 12.0,
-        active_titlebar_bg = "#16181a",
-        inactive_titlebar_bg = "#1a1d1f",
+        active_titlebar_bg = "#131a24",
+        inactive_titlebar_bg = "#192330",
     }
 else
     config.window_frame = {
         font = wezterm.font({ family = "Maple Mono NF CN", weight = "Bold" }),
         font_size = 12.0,
-        active_titlebar_bg = "#d8d4cf",
-        inactive_titlebar_bg = "#c8c4bf",
+        active_titlebar_bg = "#ebe5df",
+        inactive_titlebar_bg = "#faf4ed",
     }
 end
 
@@ -281,14 +282,6 @@ end)
 
 -- 如果希望在打开 WezTerm 时自动启动 Zellij，取消下面这行的注释
 -- config.default_prog = { "zellij", "attach", "main", "--create" }
-
--- 或者使用更智能的方式：如果已经在 Zellij 中，就不再启动
-config.set_environment_variables = {
-    -- 告诉 shell 当前在 WezTerm 中
-    WEZTERM = "1",
-    -- 告诉 nvim 当前是亮色还是暗色模式
-    NVIM_BACKGROUND = appearance.is_dark() and "dark" or "light",
-}
 
 -- ============================================
 -- 返回配置
