@@ -286,6 +286,8 @@ end)
 config.set_environment_variables = {
     -- 告诉 shell 当前在 WezTerm 中
     WEZTERM = "1",
+    -- 告诉 nvim 当前是亮色还是暗色模式
+    NVIM_BACKGROUND = appearance.is_dark() and "dark" or "light",
 }
 
 -- ============================================
