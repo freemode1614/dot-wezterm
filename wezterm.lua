@@ -252,7 +252,7 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
     local title = tab.active_pane.title
 
     -- 截断以适应宽度
-    if #title > max_width - 4 then
+    if #title > max_width - 2 then
         title = title:sub(1, max_width - 7) .. "..."
     end
 
