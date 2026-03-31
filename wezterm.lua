@@ -22,6 +22,9 @@ config.window_background_opacity = 0.8
 config.macos_window_background_blur = 20
 config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 config.enable_scroll_bar = true
+-- macOS Option 键作为 Meta/Alt（左 Option 发送 Alt，右 Option 保留输入特殊字符）
+config.send_composed_key_when_left_alt_is_pressed = false
+config.send_composed_key_when_right_alt_is_pressed = true
 
 -- 窗口内边距
 config.window_padding = {
