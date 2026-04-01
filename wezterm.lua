@@ -13,7 +13,7 @@ local config = wezterm.config_builder and wezterm.config_builder() or {}
 
 -- 字体设置
 config.font = wezterm.font("Maple Mono NF CN")
-config.font_size = 14.0
+config.font_size = 16.0
 config.line_height = 1.2
 
 -- 窗口设置
